@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useToast } from "@/components/ui/use-toast"
 
 
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,6 +24,7 @@ import { createUserAccount } from "@/lib/appwrite/api"
 
 
 const SignupForm = () => {
+  const { toast } = useToast()
 
   const isLoading = false;
 
@@ -39,9 +41,15 @@ const SignupForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
-    const  newUser = await createUserAccount(values);
+    const newUser = await createUserAccount(values);
 
-    console.log(newUser)
+    if (!newUser) {
+      return toast({
+          title: "Signup failed, Please try again",
+        });
+    }
+    
+    // const session = await signInAccount()
   }
   return (
     <Form {...form}>
@@ -75,7 +83,7 @@ const SignupForm = () => {
             name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel> 
+                <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input type="text" className="shad-input" {...field} />
                 </FormControl>
@@ -110,16 +118,16 @@ const SignupForm = () => {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-           {isLoading ? (
-            <div className="flex-center gap-2">
-              <Loader/> Loading ...
-            </div>
-           ): "Sign up"}
-           
+            {isLoading ? (
+              <div className="flex-center gap-2">
+                <Loader /> Loading ...
+              </div>
+            ) : "Sign up"}
+
           </Button>
-          <p className="text-small-regular text-light-2 text-center mt-2"> 
-           Already have an account?
-           <Link to="/sign-in" className="text-primary text-primary-500 text-small-semibold ml-1">Log in</Link>
+          <p className="text-small-regular text-light-2 text-center mt-2">
+            Already have an account?
+            <Link to="/sign-in" className="text-primary text-primary-500 text-small-semibold ml-1">Log in</Link>
           </p>
         </form>
       </div >
